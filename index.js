@@ -1,7 +1,9 @@
 import { createSwitchNavigator, createAppContainer } from 'react-navigation'
-import AuthNav from './navigation/AuthNav';
-import AppNav from './navigation/AppNav';
-
+import AuthNav from './src/navigation/AuthNav';
+import AppNav from './src/navigation/AppNav';
+import {AppRegistry} from 'react-native';
+import App from './App';
+import {name as appName} from './app.json';
 
 const SwitchNavigator = createSwitchNavigator(
   {
@@ -18,5 +20,6 @@ const SwitchNavigator = createSwitchNavigator(
 }
 );
 
-const AppContainer = createAppContainer(SwitchNavigator)
+const AppContainer = createAppContainer(SwitchNavigator);
+AppRegistry.registerComponent(appName, () => App);
 export default AppContainer
