@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableOpacity, StyleSheet, View, ScrollView } from 'react-native';
-import firebase from '../config/Firebase';
+import { Text, TextInput, TouchableOpacity, StyleSheet, View, ScrollView, AsyncStorage, Alert } from 'react-native';
+import {AddData} from '../config/AddData';
 
 export default class AddText extends Component{
     constructor(props){
@@ -8,45 +8,32 @@ export default class AddText extends Component{
         this.state ={
             headline: null,
             content: null,
-            date: null,
+            user: null
         }     
     }
 
-    componentDidMount(){
-        const day = new Date().getDate();
-        const month = new Date().getMonth() + 1;
-        const year = new Date().getFullYear();
-        const hour = new Date().getHours();
-        const minute = new Date().getMinutes();
-        this.setState({
-            date: day + '.' + month + '.' + year + ' ' + hour + ':' + minute,
-        });
-    }
-
     //Tallennetaan merkintä Firebaseen, luodaan uusi dokumentti jossa päivämäärä ja sisällön tyyppi
-    save(){
-        const {navigate} = this.props.navigation;
+    //Mikäli tallennus onnistuu, navigoidaan etusivulle
+    save = async () =>{
+        const {headline, content} = this.state;
+        const {navigate} = this.props.navigation
+        if(headline != null || content !=null){
+            
+            await AsyncStorage.getItem('Username', (err, result) =>{
+               this.setState({user: result})
+            })
+            
+            try{
+                await new AddData().addText(this.state.user, headline, content)
+                Alert.alert('Merkintä tallennettu onnistuneesti!')
+                navigate('Home')
 
-        if(this.state.headline != null || this.state.content !=null){
-            firebase
-            .firestore()
-            .collection('Users')
-            .doc()
-            .set({
-                headline: this.state.headline,
-                content: this.state.content,
-                date: this.state.date,
-            })
-            .then(() => {
-                alert('Merkintä tallennettu onnistuneesti');
-                navigate('Home');
-            })
-            .catch(error =>{
-                console.log(error);
-            })
+            }catch(error){
+                console.log("Error: " +error)
+            }
         }
         else{
-            alert('Tyhjää merkintää ei voida tallentaa');
+            Alert.alert('Tyhjää merkintää ei voida tallentaa!', 'Lisää merkinnälle otsikko ja sisältö');
         }
     };
 

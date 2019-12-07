@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Text, TouchableOpacity, StyleSheet, View, Image, TextInput } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import firebase from '../config/Firebase';
-import { Blob } from '@firebase/firestore-types';
 
 export default class AddImage extends Component{
     constructor(props){
@@ -25,11 +24,77 @@ export default class AddImage extends Component{
         });
     }
 
-    save(){
+    uriToBlob = (uri) => {
+
+        return new Promise((resolve, reject) => {
+
+            const xhr = new XMLHttpRequest();
+      
+            xhr.onload = function() {
+              // return the blob
+              resolve(xhr.response);
+            };
+            
+            xhr.onerror = function() {
+              // something went wrong
+              reject(new Error('uriToBlob failed'));
+            };
+      
+            // this helps us get a blob
+            xhr.responseType = 'blob';
+      
+            xhr.open('GET', uri, true);
+            xhr.send(null);
+      
+          });     
+    }
+
+    uploadToFB = (blob) => {
+        return new Promise((resolve, reject)=>{
+            const name = this.state.name;
+            var storageRef = firebase.storage().ref();
+      
+            storageRef
+            .child('images/'+name+'.jpg')
+            .put(blob, {contentType: 'image/jpeg'})
+            .then((snapshot)=>{
+                console.log(snapshot);
+                blob.close();
+                resolve(snapshot);
+            })
+            .catch((error)=>{
+                console.log(error);
+                reject(error);
+            });
+        });
+    }
+
+    save = async () =>{
         //Tallennetaan ja palataan etusivulle
         const {navigate} = this.props.navigation;
-        navigate('Home');
-        
+
+        if(this.state.image!=null && this.state.name != null){
+            this.uriToBlob(this.state.image.uri)
+            .then((blob) =>{
+               return this.uploadToFB(blob);
+            })
+            .then((snapshot) => {
+                alert('Kuva ladattu');
+                navigate('Home');
+            })
+            .catch((error) => {
+    
+                console.log(error);
+            })
+        } 
+        else{
+            if(this.state.image === null && this.state.name === null){
+                alert('Kuva ja nimi puuttuvat!\nValitse kuva ja nimeä se ennen tallentamista')
+            }
+            else{
+                alert('Nimi puuttuu!\nNimeä kuva ennen tallentamista')
+            }
+        }
     };
 
     //Valitaan kuva
