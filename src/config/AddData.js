@@ -24,4 +24,23 @@ export class AddData extends Component{
                 console.log('Error: '+error);
             })
     }
+
+    addImage = async(user, name, blob) =>{
+        return new Promise((resolve, reject)=>{
+            var storageRef = firebase.storage().ref();
+      
+            storageRef
+            .child('images-'+user+'/'+name+'.jpg')
+            .put(blob, {contentType: 'image/jpeg'})
+            .then((snapshot)=>{
+                console.log(snapshot);
+                blob.close();
+                resolve(snapshot);
+            })
+            .catch((error)=>{
+                console.log(error);
+                reject(error);
+            });
+        });
+    }
 }

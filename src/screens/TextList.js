@@ -41,7 +41,7 @@ export default class TextList extends Component{
 
     getContent = (date) =>{
         const {navigate} = this.props.navigation;
-        navigate('Content', {date: date, user: this.state.user});
+        navigate('TextContent', {date: date, user: this.state.user});
     };
 
     render(){

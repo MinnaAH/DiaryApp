@@ -1,95 +1,63 @@
 import React, { Component } from 'react';
-import {ScrollView, TouchableOpacity, Text, StyleSheet, View, Image } from 'react-native';
-import firebase from '../config/Firebase';	
+import {ScrollView, TouchableOpacity, Text, StyleSheet, View, Image,AsyncStorage, Alert } from 'react-native';
+import { NavigationEvents } from 'react-navigation';
+import {GetData} from '../config/GetData'	
 
 export default class ImageList extends Component{
     constructor(props){
         super(props);
         this.state ={
-            content: [],
             uri: [],
-            add: false,   
+            add: false,  
+            user: null 
         }
         
     }
-    componentDidMount() {
+
+    componentDidMount = () =>{
         this.getPosts()
-          
     }
 
     //Haetaan firebasesta etusivulle tallennetun merkinnän nimi/otsikko ja päivämäärä
-    getPosts = () => {
-        var storageRef = firebase.storage().ref();
-        
-        storageRef
-        .child('images')
-        .listAll()
-        .then((result) => {
-            result.items.forEach((imageRef) => {
-                this.setState({
-                    content: [...this.state.content, imageRef.name]
-                })
-            }) 
-            this.getUri()
-            
+    getPosts = async () => {
+        await AsyncStorage.getItem('Username', (err, result) =>{
+            this.setState({user: result})
         })
-        .catch((error) => {
-            console.log(error);
-        })
-        
-        
-        if(this.state.content != null){this.getUri();}
-           
+        try{
+            const image = await new GetData().getPicture(this.state.user)
+            console.log('const image: '+image)
+            switch (image) {
+                case null:
+                    Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuva tai teksti merkintä')
+                    break;
+                case undefined:
+                    Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuvatai teksti merkintä')
+                    break;
+                default:
+                    this.setState({uri: image})
+                    break;
+            }
+        }catch(error){
+            console.log(error)
+        }           
     };
 
-    getUri = () =>{
-            var storageRef = firebase.storage().ref();
-
-            for(var i=0; i<this.state.content.length; i++){
-                storageRef
-                .child('images/'+this.state.content[i])
-                .getDownloadURL()
-                .then((url) => {
-                    const xhr = new XMLHttpRequest();
-                    xhr.responseType = 'blob';
-                    xhr.onload = function(event) {
-                        var blob = xhr.response;
-                    };
-                    xhr.open('GET', url);
-                    xhr.send();
-                    
-                    console.log(url)
-                    this.setState({
-                        uri: [...this.state.uri, url]
-                    })
-                })
-                .catch((error) => {
-                    console.log(error);
-                })
-            }
-        
-        }
-    
-
-
-
-    getContent(){
+    getContent(imageUri){
         const {navigate} = this.props.navigation;
-        navigate('Content');
+        navigate('ImageContent', {uri: imageUri});
     };
 
     render(){
         const {navigate} = this.props.navigation;
         return(
             <View style={styles.container}>
-                
                 <ScrollView>
                 {
                     
                     this.state.uri.map((item, index) => (
                             <TouchableOpacity
                                 style={styles.listItem}
-                                onPress={() => this.getContent(item.headline)}
+                                onPress={() => this.getContent(item)}
                             >
                                 <Image style={styles.image} source={{uri: item}}/>
                             </TouchableOpacity>

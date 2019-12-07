@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Text, TouchableOpacity, StyleSheet, View, Image, TextInput } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View, Image, TextInput,AsyncStorage } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import firebase from '../config/Firebase';
+import {AddData} from '../config/AddData';
 
 export default class AddImage extends Component{
     constructor(props){
@@ -10,6 +10,7 @@ export default class AddImage extends Component{
             name: null,
             image: null,
             date: null,
+            user: null
         }     
     }
 
@@ -49,41 +50,28 @@ export default class AddImage extends Component{
           });     
     }
 
-    uploadToFB = (blob) => {
-        return new Promise((resolve, reject)=>{
-            const name = this.state.name;
-            var storageRef = firebase.storage().ref();
-      
-            storageRef
-            .child('images/'+name+'.jpg')
-            .put(blob, {contentType: 'image/jpeg'})
-            .then((snapshot)=>{
-                console.log(snapshot);
-                blob.close();
-                resolve(snapshot);
-            })
-            .catch((error)=>{
-                console.log(error);
-                reject(error);
-            });
-        });
-    }
-
     save = async () =>{
         //Tallennetaan ja palataan etusivulle
+        await AsyncStorage.getItem('Username', (err, result) =>{
+            this.setState({user: result})
+        })
         const {navigate} = this.props.navigation;
 
         if(this.state.image!=null && this.state.name != null){
             this.uriToBlob(this.state.image.uri)
             .then((blob) =>{
-               return this.uploadToFB(blob);
+                try{
+                    return new AddData().addImage(this.state.user, this.state.name, blob)
+        
+                }catch(error){
+                    console.log("Error: " +error)
+                }
             })
-            .then((snapshot) => {
+            .then(() => {
                 alert('Kuva ladattu');
                 navigate('Home');
             })
             .catch((error) => {
-    
                 console.log(error);
             })
         } 

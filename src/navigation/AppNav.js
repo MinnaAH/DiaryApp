@@ -1,7 +1,8 @@
 import {createStackNavigator} from 'react-navigation-stack';
 import TextList from '../screens/TextList';
 import ImageList from '../screens/ImageList';
-import Content from '../screens/Content';
+import TextContent from '../screens/TextContent';
+import ImageContent from '../screens/ImageContent'
 import AddText from '../screens/AddText';
 import AddImage from '../screens/AddImage';
 
@@ -9,7 +10,8 @@ const AppNavigation = createStackNavigator(
     {
         Home: {screen: TextList},
         ImageList: {screen: ImageList},
-        Content: {screen: Content},
+        TextContent: {screen: TextContent},
+        ImageContent: {screen: ImageContent},
         AddText:{screen: AddText},
         AddImage:{screen: AddImage}
     },
