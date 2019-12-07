@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableOpacity, StyleSheet, View, ScrollView, AsyncStorage, Alert } from 'react-native';
+import { Text, TextInput, TouchableOpacity, StyleSheet, View, ScrollView, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
 import {AddData} from '../config/AddData';
 
 export default class AddText extends Component{
@@ -8,7 +8,8 @@ export default class AddText extends Component{
         this.state ={
             headline: null,
             content: null,
-            user: null
+            user: null,
+            loading: false,
         }     
     }
 
@@ -40,6 +41,13 @@ export default class AddText extends Component{
     render(){
         return(
             <View style={styles.container}>
+                {this.state.loading && 
+                    <View style={styles.loading}>
+                        <ActivityIndicator 
+                        size='large'
+                        animating={this.state.loading}/>
+                    </View>
+                }
                 <ScrollView>
                     <Text style={styles.headline}>Lisää merkintä</Text>
                     <TextInput
@@ -58,7 +66,7 @@ export default class AddText extends Component{
                 </ScrollView>
                 <View style={styles.btnContainer}>
                     <TouchableOpacity
-                        onPress={() => this.save()}
+                        onPress={() => {this.save(); this.setState({loading: true})}}
                         style={styles.btn}
                     >
                         <Text>Tallenna</Text>

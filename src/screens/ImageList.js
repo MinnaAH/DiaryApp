@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ScrollView, TouchableOpacity, Text, StyleSheet, View, Image,AsyncStorage, Alert } from 'react-native';
+import {ScrollView, TouchableOpacity, Text, StyleSheet, View, Image,AsyncStorage, Alert, ActivityIndicator } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import {GetData} from '../config/GetData'	
 
@@ -8,8 +8,10 @@ export default class ImageList extends Component{
         super(props);
         this.state ={
             uri: [],
+            name:[],
             add: false,  
-            user: null 
+            user: null,
+            loading: true 
         }
         
     }
@@ -25,7 +27,7 @@ export default class ImageList extends Component{
         })
         try{
             const image = await new GetData().getPicture(this.state.user)
-            console.log('const image: '+image)
+            console.log('const image name: '+image.name)
             switch (image) {
                 case null:
                     Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuva tai teksti merkintä')
@@ -34,7 +36,7 @@ export default class ImageList extends Component{
                     Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuvatai teksti merkintä')
                     break;
                 default:
-                    this.setState({uri: image})
+                    this.setState({uri: image.uri, name: image.name, loading: false})
                     break;
             }
         }catch(error){
@@ -42,28 +44,34 @@ export default class ImageList extends Component{
         }           
     };
 
-    getContent(imageUri){
+    getContent(imageUri, imageName){
         const {navigate} = this.props.navigation;
-        navigate('ImageContent', {uri: imageUri});
+        navigate('ImageContent', {uri: imageUri, name: imageName, user: this.state.user});
     };
 
     render(){
         const {navigate} = this.props.navigation;
         return(
             <View style={styles.container}>
+                {this.state.loading && 
+                    <View style={styles.loading}>
+                        <ActivityIndicator 
+                        size='large'
+                        animating={this.state.loading}/>
+                    </View>
+                }
                 <ScrollView>
                 {
-                    
                     this.state.uri.map((item, index) => (
-                            <TouchableOpacity
-                                style={styles.listItem}
-                                onPress={() => this.getContent(item)}
-                            >
+                        <TouchableOpacity
+                            style={styles.listItem}
+                            onPress={() => this.getContent(item, this.state.name[index])}>
                                 <Image style={styles.image} source={{uri: item}}/>
-                            </TouchableOpacity>
+                                <Text>{this.state.name[index]}</Text>
+                        </TouchableOpacity>
 
                     ))
-                }    
+                }
                 </ScrollView>
                 {this.state.add &&
                     <View>

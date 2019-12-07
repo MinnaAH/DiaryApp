@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { ScrollView ,Text, TouchableOpacity, StyleSheet, View, Alert,Image } from 'react-native';
-import {GetData} from '../config/GetData'
+import { ScrollView ,Text, TouchableOpacity, StyleSheet, View, Alert,Image, ActivityIndicator } from 'react-native';
+import {DeleteData} from '../config/DeleteData';
 
 export default class ImageContent extends Component{
     constructor(props){
         super(props);
         this.state ={
-            uri: null
+            uri: null,
+            name: null,
+            user: null,
+            loading: true
         }     
     }
 
@@ -16,6 +19,8 @@ export default class ImageContent extends Component{
     componentDidMount = async() =>{
         const {navigation} = this.props;
         const image = await navigation.getParam('uri')
+        const imageName = await navigation.getParam('name')
+        const username = await navigation.getParam('user')
 
         switch (image) {
             case null:
@@ -25,21 +30,44 @@ export default class ImageContent extends Component{
                 Alert.alert('Sisällön haussa tapahtui virhe!')
                 break;
             default:
-                this.setState({uri: image})
+                this.setState({uri: image, name: imageName, user: username, loading: false})
                 break;
         }
         
-
+    }
+    deleteContent = async () =>{
+        const {navigate} = this.props.navigation
+        try{
+            await new DeleteData().deleteImage(this.state.name,this.state.user)
+            Alert.alert('Kuva poistettu onnistuneesti')
+            navigate('Home')
+        }catch(error){
+            console.log('Error: ' + error)
+        }
+        
     }
     share(){
-        //siirrytään merkinnän lisäämiseen
+        //jaetaan merkintä
         alert('Button pressed');
     };
 
     render(){
         return(
             <View style={styles.container}>
-                <Image style={styles.image} source={{uri: this.state.uri}}/>
+                {this.state.loading && 
+                    <View style={styles.loading}>
+                        <ActivityIndicator 
+                        size='large'
+                        animating={this.state.loading}/>
+                    </View>
+                }
+                {this.state.uri && 
+                    <View>
+                        <TouchableOpacity onPress={() => {this.deleteContent();this.setState({loading: true})}}><Text>Poista</Text></TouchableOpacity>
+                        <Image style={styles.image} source={{uri: this.state.uri}}/>
+                        <Text>{this.state.name}</Text>
+                    </View>
+                }
                 <View style={styles.btnContainer}>
                     <TouchableOpacity     
                         onPress={() => this.share()}
@@ -75,7 +103,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
     },
     image:{
-        width: 300,
-        height: 300
+        width: 150,
+        height: 150
     },
 })

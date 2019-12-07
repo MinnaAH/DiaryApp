@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ScrollView, TouchableOpacity, Text, StyleSheet, View, AsyncStorage, Alert } from 'react-native';
+import {ScrollView, TouchableOpacity, Text, StyleSheet, View, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
 import {GetData} from '../config/GetData'
 
@@ -9,7 +9,8 @@ export default class TextList extends Component{
         this.state ={
             content:[],
             add: false, 
-            user: null
+            user: null,
+            loading: true
         }
         
     }
@@ -31,7 +32,7 @@ export default class TextList extends Component{
                     Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuvatai teksti merkintä')
                     break;
                 default:
-                    this.setState({content: data})
+                    this.setState({content: data, loading: false})
                     break;
             }
         }catch(error){
@@ -49,6 +50,13 @@ export default class TextList extends Component{
         return(
             <View style={styles.container}>
                 <NavigationEvents onDidFocus={() => this.getPosts()}/>
+                {this.state.loading && 
+                    <View style={styles.loading}>
+                        <ActivityIndicator 
+                        size='large'
+                        animating={this.state.loading}/>
+                    </View>
+                }
                 <ScrollView>
                 {
                     this.state.content.map((item, index) => (
@@ -60,7 +68,6 @@ export default class TextList extends Component{
                                 <Text style={styles.headline}>{item.headline}</Text>
                                 <Text style={styles.date} numberOfLines={2}>{item.content}</Text>
                             </TouchableOpacity>
-
                     ))
                 }
                 </ScrollView>

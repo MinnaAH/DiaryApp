@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, TouchableOpacity, StyleSheet, View, Image, TextInput,AsyncStorage } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View, Image, TextInput,AsyncStorage, ActivityIndicator } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {AddData} from '../config/AddData';
 
@@ -10,7 +10,8 @@ export default class AddImage extends Component{
             name: null,
             image: null,
             date: null,
-            user: null
+            user: null,
+            loading: false
         }     
     }
 
@@ -100,6 +101,13 @@ export default class AddImage extends Component{
         let { image } = this.state;
         return(
             <View style={styles.container}>
+                {this.state.loading && 
+                    <View style={styles.loading}>
+                        <ActivityIndicator 
+                        size='large'
+                        animating={this.state.loading}/>
+                    </View>
+                }
                 <Text style={styles.headline}>Valitse kuva</Text>
                 <View style={styles.imageView}>
                     {image && <Image source={{ uri: image.uri }} style={styles.picture} />}
@@ -120,7 +128,7 @@ export default class AddImage extends Component{
                         <Text>Valitse Kuva</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        onPress={() => this.save()}
+                        onPress={() => {this.save(); this.setState({loading: true})}}
                         style={styles.btn}
                     ><Text>Tallenna</Text></TouchableOpacity>
                 </View>
