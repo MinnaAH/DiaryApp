@@ -25,10 +25,10 @@ export default class TextContent extends Component{
         const contentData = await new GetData().getTextContent(date,username)
         switch (contentData) {
             case null:
-                Alert.alert('Sisällön haussa tapahtui virhe!')
+                Alert.alert('Sisällön haussa tapahtui virhe!','')
                 break;
             case undefined:
-                Alert.alert('Sisällön haussa tapahtui virhe!')
+                Alert.alert('Sisällön haussa tapahtui virhe!','')
                 break;
             default:
                 this.setState({content: contentData, loading: false})
@@ -36,6 +36,14 @@ export default class TextContent extends Component{
         }
         
     }
+    showAlert = (date) =>{
+        Alert.alert('Haluatko varmasti poistaa merkinnän?','',
+            [
+                {text: 'Poista', onPress: () => {this.deleteContent(date);this.setState({loading: true})}, style: 'destructive'},
+                {text: 'Peruuta', style: 'cancel'}
+            ])
+    }
+
     deleteContent = async (date) =>{
         const {navigate} = this.props.navigation
         try{
@@ -66,7 +74,7 @@ export default class TextContent extends Component{
                     
                     this.state.content.map((item, index) => (
                         <ScrollView key={index}>
-                            <TouchableOpacity onPress={() => {this.deleteContent(item.date), this.setState({loading: true})}}><Text>Poista</Text></TouchableOpacity>
+                            <TouchableOpacity style={styles.btn}  onPress={() => this.showAlert(item.date)}><Text>Poista</Text></TouchableOpacity>
                             <Text style={styles.headline}>{item.headline}</Text>
                             <Text style={styles.content}>{item.content}</Text>
                         </ScrollView>

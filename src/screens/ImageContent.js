@@ -35,11 +35,18 @@ export default class ImageContent extends Component{
         }
         
     }
+    showAlert = () =>{
+        Alert.alert('Haluatko varmasti poistaa kuvan?','',
+            [
+                {text: 'Poista', onPress: () => {this.deleteContent();this.setState({loading: true})}, style: 'destructive'},
+                {text: 'Peruuta', style: 'cancel'}
+            ])
+    }
     deleteContent = async () =>{
         const {navigate} = this.props.navigation
         try{
             await new DeleteData().deleteImage(this.state.name,this.state.user)
-            Alert.alert('Kuva poistettu onnistuneesti')
+            Alert.alert('Kuva poistettu onnistuneesti','')
             navigate('Home')
         }catch(error){
             console.log('Error: ' + error)
@@ -63,7 +70,7 @@ export default class ImageContent extends Component{
                 }
                 {this.state.uri && 
                     <View>
-                        <TouchableOpacity onPress={() => {this.deleteContent();this.setState({loading: true})}}><Text>Poista</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.showAlert()}><Text>Poista</Text></TouchableOpacity>
                         <Image style={styles.image} source={{uri: this.state.uri}}/>
                         <Text>{this.state.name}</Text>
                     </View>

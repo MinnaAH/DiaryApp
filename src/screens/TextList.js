@@ -14,6 +14,9 @@ export default class TextList extends Component{
         }
         
     }
+    componentDidMount = () =>{
+        this.getPosts()
+    }
 
     //Haetaan firebasesta etusivulle tallennetun merkinnän nimi/otsikko ja päivämäärä
     //Mikäli käyttäjän firebase collection on tyhjä -> alert
@@ -77,7 +80,7 @@ export default class TextList extends Component{
                         style={styles.btnAdd}
                         onPress={() => {navigate('AddText');this.setState({add: false})}}
                         >
-                            <Text>Lisää Teskti</Text>
+                            <Text>Lisää Teksti</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                         style={styles.btnAdd}

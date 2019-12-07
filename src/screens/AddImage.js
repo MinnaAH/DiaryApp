@@ -70,7 +70,7 @@ export default class AddImage extends Component{
             })
             .then(() => {
                 alert('Kuva ladattu');
-                navigate('Home');
+                navigate('ImageList');
             })
             .catch((error) => {
                 console.log(error);

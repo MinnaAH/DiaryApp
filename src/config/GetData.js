@@ -58,9 +58,8 @@ export class GetData extends Component{
                 return null;
             }
             result.items.forEach((imageRef) => {
-                image.push(imageRef.name)   
+                image.push(imageRef.name)
             })  
-            console.log('image: '+image)
             return this.getPictureUri(user, image)         
         })
         .catch((error) => {
@@ -69,13 +68,13 @@ export class GetData extends Component{
     }
 
     getPictureUri = async(user, image) => {
-        console.log('content: '+image)
-        console.log('image length: '+image.length)
         var uri = []
+        var name = []
         var i=0
         var storageRef = firebase.storage().ref();
 
         for(i; i<image.length; i++){
+            name.push(image[i]);
             await storageRef
                 .child('images-'+user+'/'+image[i])
                 .getDownloadURL()
@@ -87,14 +86,13 @@ export class GetData extends Component{
                     };
                     xhr.open('GET', url);
                     xhr.send();
-                    console.log('url: '+ url)
                     uri.push(url)
                 })
                 .catch((error) => {
                     console.log(error);
                 })
         }
-        if(i>=image.length){return uri}
+        if(i>=image.length){return {uri: uri, name: name}}
             
     }
 }

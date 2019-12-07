@@ -16,7 +16,7 @@ export default class ImageList extends Component{
         
     }
 
-    componentDidMount = () =>{
+   componentDidMount = () =>{
         this.getPosts()
     }
 
@@ -27,7 +27,6 @@ export default class ImageList extends Component{
         })
         try{
             const image = await new GetData().getPicture(this.state.user)
-            console.log('const image name: '+image.name)
             switch (image) {
                 case null:
                     Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuva tai teksti merkintä')
@@ -53,6 +52,7 @@ export default class ImageList extends Component{
         const {navigate} = this.props.navigation;
         return(
             <View style={styles.container}>
+                 <NavigationEvents onDidFocus={() => this.getPosts()}/>
                 {this.state.loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
@@ -79,7 +79,7 @@ export default class ImageList extends Component{
                         style={styles.btnAdd}
                         onPress={() => {navigate('AddText');this.setState({add: false})}}
                         >
-                            <Text>Lisää Teskti</Text>
+                            <Text>Lisää Teksti</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                         style={styles.btnAdd}

@@ -26,7 +26,7 @@ export default class AddText extends Component{
             
             try{
                 await new AddData().addText(this.state.user, headline, content)
-                Alert.alert('Merkintä tallennettu onnistuneesti!')
+                Alert.alert('Merkintä tallennettu onnistuneesti!','')
                 navigate('Home')
 
             }catch(error){
