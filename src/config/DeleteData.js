@@ -15,7 +15,6 @@ export class DeleteData extends Component{
               return null;
             } 
             snapshot.forEach((doc) => {
-                console.log('doc: ' +doc)
                 doc.ref.delete()
                 .then(() => {
                     return;

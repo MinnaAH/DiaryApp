@@ -7,7 +7,6 @@ export class AddData extends Component{
     //Tietokannassa collection: User-KÄYTTÄJÄTUNNUS
     addText = async(user, headline, content) =>{
         const date = new Date().toLocaleDateString() + ' '+ new Date().toLocaleTimeString()
-        console.log(date)
         firebase
             .firestore()
             .collection('User-'+user)
@@ -16,9 +15,6 @@ export class AddData extends Component{
                 headline: headline,
                 content: content,
                 date: date,
-            })
-            .then(() => {
-                console.log('OK')
             })
             .catch(error =>{
                 console.log('Error: '+error);
@@ -33,7 +29,6 @@ export class AddData extends Component{
             .child('images-'+user+'/'+name+'.jpg')
             .put(blob, {contentType: 'image/jpeg'})
             .then((snapshot)=>{
-                console.log(snapshot);
                 blob.close();
                 resolve(snapshot);
             })

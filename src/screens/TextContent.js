@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ScrollView ,Text, TouchableOpacity, StyleSheet, View, Alert, ActivityIndicator } from 'react-native';
 import {GetData} from '../config/GetData'
 import {DeleteData} from '../config/DeleteData';
+import styles from '../Style';
 
 export default class TextContent extends Component{
     constructor(props){
@@ -61,58 +62,34 @@ export default class TextContent extends Component{
     };
 
     render(){
+        const {loading, content} = this.state;
         return(
             <View style={styles.container}>
-                {this.state.loading && 
+                {loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
+                        color='#e93766'
                         size='large'
-                        animating={this.state.loading}/>
+                        animating={loading}/>
                     </View>
                 }
                 {
                     
-                    this.state.content.map((item, index) => (
-                        <ScrollView key={index}>
-                            <TouchableOpacity style={styles.btn}  onPress={() => this.showAlert(item.date)}><Text>Poista</Text></TouchableOpacity>
-                            <Text style={styles.headline}>{item.headline}</Text>
-                            <Text style={styles.content}>{item.content}</Text>
-                        </ScrollView>
+                    content.map((item, index) => (
+                        <View>
+                            <TouchableOpacity style={styles.deleteBtn}  onPress={() => this.showAlert(item.date)}>
+                                <Text style={styles.deleteText}>Poista</Text>
+                            </TouchableOpacity>
+                            <ScrollView key={index}>
+                            
+                                <Text style={styles.contentHeadline}>{item.headline}</Text>
+                                <Text style={styles.content}>{item.content}</Text>
+                            </ScrollView>
+                        </View>
                     ))
                     
                 }
-                <View style={styles.btnContainer}>
-                    <TouchableOpacity     
-                        onPress={() => this.share()}
-                        style={styles.btn}
-                    >
-                        <Text>Jaa</Text>
-                    </TouchableOpacity>
-                </View>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        paddingTop: 20,
-        paddingHorizontal: 10,
-        flex: 1,        
-    },
-    headline:{
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    content:{
-        fontSize: 18,
-    },
-    btnContainer:{
-        width: '100%',
-        bottom: 0,
-    },
-    btn:{
-        alignItems: 'center',
-        paddingVertical: 20,
-    }
-})

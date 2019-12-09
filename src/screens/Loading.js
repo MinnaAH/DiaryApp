@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, StyleSheet, AsyncStorage } from 'react-native'
+import { View, Text, ActivityIndicator, AsyncStorage } from 'react-native'
+import styles from '../Style'
 
 export default class Loading extends React.Component {
   //Tarkistetaan onko laitteen käyttäjä jo rekisteröitynyt
@@ -15,14 +16,10 @@ export default class Loading extends React.Component {
     }
     render() {
       return (
-        <View style={styles.container}><Text>Loading</Text><ActivityIndicator color='#e93766' size="large" /></View>
+        <View style={styles.loading}>
+            <Text>Loading</Text>
+            <ActivityIndicator color='#e93766' size="large" />
+          </View>
       )
     }
   }
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }
-  })

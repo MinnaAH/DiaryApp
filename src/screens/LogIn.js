@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import {Text, TouchableOpacity, TextInput, StyleSheet, View, AsyncStorage } from 'react-native';
-
+import {Text, TouchableOpacity, TextInput, View, AsyncStorage } from 'react-native';
+import styles from '../Style'
 
 export default class SignIn extends Component{
     constructor(props){
@@ -38,7 +38,7 @@ export default class SignIn extends Component{
         var pwdL = this.state.pwd.length;
         return(
             <View style={styles.container}>
-                <Text style={styles.headline}>Syötä 4 numeroinen PIN-koodi</Text>
+                <Text style={styles.headline2}>Syötä 4 numeroinen PIN-koodi</Text>
                 <TextInput
                     style={styles.pin} 
                     placeholder="PIN-koodi"
@@ -47,7 +47,7 @@ export default class SignIn extends Component{
                     keyboardType={'numeric'}
                     maxLength={4}
                 />
-                <View style={styles.btnContainer}>
+                <View style={styles.btnContainer2}>
                     <TouchableOpacity 
                         style={styles.btn}
                         onPress={() => this.handelLogIn(pwdL)}
@@ -59,28 +59,3 @@ export default class SignIn extends Component{
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        marginTop: 100,
-        flex: 1,
-    },
-    headline:{
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    pin:{
-        fontSize: 18,
-        textAlign: 'center',
-        padding: 10,
-    },
-    btnContainer:{
-        width: '100%',
-        position: 'absolute',
-        bottom: 0,
-    },
-    btn:{
-        alignItems: 'center',
-        paddingVertical: 20,
-    }
-})

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import {Text, TouchableOpacity, TextInput, StyleSheet, View, AsyncStorage } from 'react-native';
+import {Text, TouchableOpacity, TextInput, StyleSheet, View, AsyncStorage, Alert } from 'react-native';
+import styles from '../Style'
 
 
 export default class SignIn extends Component{
@@ -17,7 +18,7 @@ export default class SignIn extends Component{
     handleSignUp(pwdL){
         const {navigate} = this.props.navigation;
         //PIN-koodin pituuden tarkistus
-        if(pwdL < 4 || this.state.username === null){ alert('Tarkista antamasi tunnukset! /n PIN-koodin tulee olla vähintään 4 merkkiä ja käyttäjätunnus ei voi olla tyhjä')}
+        if(pwdL < 4 || this.state.username === null){ Alert.alert('Tarkista antamasi tunnukset!','PIN-koodin tulee olla vähintään 4 merkkiä ja käyttäjätunnus ei voi olla tyhjä')}
         //Lisätään käyttäjätunnus paikallisesti
         //Firebase luodaan collection kyseiselle käyttäjälle käyttäjätunnuksen pohjalta
         else{
@@ -36,7 +37,7 @@ export default class SignIn extends Component{
         var pwdL = this.state.pwd.length;
         return(
             <View style={styles.container}>
-                <Text style={styles.headline}>Rekisteröi käyttäjätunnus ja 4 numeroinen PIN-koodi</Text>
+                <Text style={styles.headline2}>Rekisteröi käyttäjätunnus ja 4 numeroinen PIN-koodi</Text>
                 <TextInput
                     style={styles.pin} 
                     placeholder="Käyttäjätunnus"
@@ -51,7 +52,7 @@ export default class SignIn extends Component{
                     keyboardType={'numeric'}
                     maxLength={4}
                 />
-                <View style={styles.btnContainer}>
+                <View style={styles.btnContainer2}>
                     <TouchableOpacity 
                         style={styles.btn}
                         onPress={() => this.handleSignUp(pwdL)}
@@ -63,28 +64,3 @@ export default class SignIn extends Component{
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        marginTop: 100,
-        flex: 1,
-    },
-    headline:{
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    pin:{
-        fontSize: 18,
-        textAlign: 'center',
-        padding: 10,
-    },
-    btnContainer:{
-        width: '100%',
-        position: 'absolute',
-        bottom: 0,
-    },
-    btn:{
-        alignItems: 'center',
-        paddingVertical: 20,
-    }
-})

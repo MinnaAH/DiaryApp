@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import {ScrollView, TouchableOpacity, Text, StyleSheet, View, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
+import {ScrollView, TouchableOpacity, Text, View, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
-import {GetData} from '../config/GetData'
+import {GetData} from '../config/GetData';
+import styles from '../Style'
+
 
 export default class TextList extends Component{
     constructor(props){
@@ -26,13 +28,14 @@ export default class TextList extends Component{
         })
         try{
             const data = await new GetData().getText(this.state.user)
-            console.log(data)
             switch (data) {
                 case null:
                     Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuva tai teksti merkintä')
+                    this.setState({loading: false})
                     break;
                 case undefined:
                     Alert.alert('Tietokanta on tyhjä!', 'Aloita päiväkirjan käyttäminen lisäämällä kuvatai teksti merkintä')
+                    this.setState({loading: false})
                     break;
                 default:
                     this.setState({content: data, loading: false})
@@ -43,109 +46,77 @@ export default class TextList extends Component{
         }
     }
 
+    //Haetaan yksittäinen merkintä ja sen koko sisältö uuteen näkymään
     getContent = (date) =>{
         const {navigate} = this.props.navigation;
         navigate('TextContent', {date: date, user: this.state.user});
     };
 
     render(){
+        const{loading, content, add} = this.state;
         const {navigate} = this.props.navigation;
         return(
             <View style={styles.container}>
                 <NavigationEvents onDidFocus={() => this.getPosts()}/>
-                {this.state.loading && 
+                {loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
+                        color='#e93766'
                         size='large'
-                        animating={this.state.loading}/>
+                        animating={loading}/>
                     </View>
                 }
                 <ScrollView>
                 {
-                    this.state.content.map((item, index) => (
+                    content.map((item, index) => (
                             <TouchableOpacity
                                 style={styles.listItem}
                                 key={item.id}
                                 onPress={() => this.getContent(item.date)}
-                            >
+                                key={index}>
                                 <Text style={styles.headline}>{item.headline}</Text>
-                                <Text style={styles.date} numberOfLines={2}>{item.content}</Text>
+                                <Text style={styles.content} numberOfLines={2}>{item.content}</Text>
                             </TouchableOpacity>
                     ))
                 }
                 </ScrollView>
-                {this.state.add &&
+                {add &&
                     <View>
                         <TouchableOpacity
                         style={styles.btnAdd}
                         onPress={() => {navigate('AddText');this.setState({add: false})}}
                         >
-                            <Text>Lisää Teksti</Text>
+                            <Text style={styles.btnText}>Lisää Teksti</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                         style={styles.btnAdd}
                         onPress={() => {navigate('AddImage');this.setState({add: false})}}
                         >
-                            <Text>Lisää Kuva</Text>
+                            <Text style={styles.btnText}>Lisää Kuva</Text>
                         </TouchableOpacity>
                     </View>
                 }
                 <View style={styles.btnContainer}>
                     <TouchableOpacity
-                        style={styles.btn}
+                        style={styles.listBtn}
                         onPress={() => navigate('Home')}
                     >
-                        <Text>Teksti</Text>    
+                        <Text style={styles.btnText}>Teksti</Text>    
                     </TouchableOpacity>
                     <TouchableOpacity
-                    style={styles.btn}
+                    style={styles.listBtn}
                     onPress={() => this.setState(prevstate =>({add: !prevstate.add}))}
                     >
-                    <Text>+</Text>
+                    <Text style={styles.btnText}>+</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                    style={styles.btn}
+                    style={styles.listBtn}
                     onPress={() => navigate('ImageList')}
                     >
-                        <Text>Kuva</Text>
+                        <Text style={styles.btnText}>Kuva</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        flexDirection:'column',
-        justifyContent:'center',
-        alignItems: 'stretch',
-        marginTop: 20,
-    },
-    listItem:{
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-    },
-    headline:{
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    date:{
-    },
-    btnContainer:{
-        width: '100%',
-        bottom: 0,
-        flexDirection:'row',
-    },
-    btn:{
-        alignItems: 'center',
-        width:'33.33%',
-        paddingVertical: 20,
-    },
-    btnAdd:{
-        alignItems: 'center',
-        width:'100%',
-        paddingVertical: 20,
-    }
-})

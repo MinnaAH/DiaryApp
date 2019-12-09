@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, TextInput, TouchableOpacity, StyleSheet, View, ScrollView, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, ScrollView, AsyncStorage, Alert, ActivityIndicator } from 'react-native';
 import {AddData} from '../config/AddData';
+import styles from '../Style'
 
 export default class AddText extends Component{
     constructor(props){
@@ -26,7 +27,7 @@ export default class AddText extends Component{
             
             try{
                 await new AddData().addText(this.state.user, headline, content)
-                Alert.alert('Merkintä tallennettu onnistuneesti!','')
+                Alert.alert('Tallennettu','Merkintä tallennettu onnistuneesti!')
                 navigate('Home')
 
             }catch(error){
@@ -39,29 +40,31 @@ export default class AddText extends Component{
     };
 
     render(){
+        const {loading, headline, content} = this.state
         return(
             <View style={styles.container}>
-                {this.state.loading && 
+                {loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
+                        color='#e93766'
                         size='large'
-                        animating={this.state.loading}/>
+                        animating={loading}/>
                     </View>
                 }
                 <ScrollView>
-                    <Text style={styles.headline}>Lisää merkintä</Text>
+                    <Text style={styles.headline2}>Lisää merkintä</Text>
                     <TextInput
                         style={styles.addHeadline}
                         placeholder="Otsikko"
                         onChangeText={(headline) => this.setState({headline})}
-                        value ={this.state.headline}
+                        value ={headline}
                     />
                     <TextInput
-                        style={styles.content}
+                        style={styles.addContent}
                         placeholder="..."
-                        multiline={true} 
+                        multiline={true}
                         onChangeText={(content) => this.setState({content})}
-                        value ={this.state.content}
+                        value ={content}
                     />
                 </ScrollView>
                 <View style={styles.btnContainer}>
@@ -69,38 +72,10 @@ export default class AddText extends Component{
                         onPress={() => {this.save(); this.setState({loading: true})}}
                         style={styles.btn}
                     >
-                        <Text>Tallenna</Text>
+                        <Text style={styles.btnText}>Tallenna</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        paddingTop: 30,
-        paddingHorizontal: 10,
-        flex: 1, 
-    },
-    headline:{
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    addHeadline:{
-        fontSize: 20,
-    },
-    content:{
-        fontSize: 18,
-        width: '100%',
-    },
-    btnContainer:{
-        width: '100%',
-        bottom: 0,
-    },
-    btn:{
-        alignItems: 'center',
-        paddingVertical: 20,
-        
-    }
-})

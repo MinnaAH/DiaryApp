@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {ScrollView, TouchableOpacity, Text, StyleSheet, View, Image,AsyncStorage, Alert, ActivityIndicator } from 'react-native';
 import { NavigationEvents } from 'react-navigation';
-import {GetData} from '../config/GetData'	
+import {GetData} from '../config/GetData'
+import styles from '../Style'	
 
 export default class ImageList extends Component{
     constructor(props){
@@ -12,8 +13,7 @@ export default class ImageList extends Component{
             add: false,  
             user: null,
             loading: true 
-        }
-        
+        }     
     }
 
    componentDidMount = () =>{
@@ -50,101 +50,72 @@ export default class ImageList extends Component{
 
     render(){
         const {navigate} = this.props.navigation;
+        const{loading, uri, name, add}=this.state;
         return(
             <View style={styles.container}>
                  <NavigationEvents onDidFocus={() => this.getPosts()}/>
-                {this.state.loading && 
+                {loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
+                        color='#e93766'
                         size='large'
-                        animating={this.state.loading}/>
+                        animating={loading}/>
                     </View>
                 }
                 <ScrollView>
                 {
-                    this.state.uri.map((item, index) => (
+                    uri.map((item, index) => (
                         <TouchableOpacity
                             style={styles.listItem}
-                            onPress={() => this.getContent(item, this.state.name[index])}>
-                                <Image style={styles.image} source={{uri: item}}/>
-                                <Text>{this.state.name[index]}</Text>
+                            onPress={() => this.getContent(item, name[index])}
+                            key={index}>
+                                <View style={styles.listItemImage} key={index}>
+                                    <Image style={styles.imageList} source={{uri: item}}/>
+                                    <Text style={styles.imageName}>{name[index]}</Text>
+                                </View>
                         </TouchableOpacity>
 
                     ))
                 }
                 </ScrollView>
-                {this.state.add &&
+                {add &&
                     <View>
                         <TouchableOpacity
                         style={styles.btnAdd}
                         onPress={() => {navigate('AddText');this.setState({add: false})}}
                         >
-                            <Text>Lisää Teksti</Text>
+                            <Text style={styles.btnText}>Lisää Teksti</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                         style={styles.btnAdd}
                         onPress={() => {navigate('AddImage');this.setState({add: false})}}
                         >
-                            <Text>Lisää Kuva</Text>
+                            <Text style={styles.btnText}>Lisää Kuva</Text>
                         </TouchableOpacity>
                     </View>
                 }
+                
                 <View style={styles.btnContainer}>
                     <TouchableOpacity
-                        style={styles.btn}
+                        style={styles.listBtn}
                         onPress={() => navigate('Home')}
                     >
-                        <Text>Teksti</Text>    
+                        <Text style={styles.btnText}>Teksti</Text>    
                     </TouchableOpacity>
                     <TouchableOpacity
-                    style={styles.btn}
+                    style={styles.listBtn}
                     onPress={() => this.setState(prevstate =>({add: !prevstate.add}))}
                     >
-                    <Text>+</Text>
+                    <Text style={styles.btnText}>+</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                    style={styles.btn}
+                    style={styles.listBtn}
                     onPress={() => navigate('ImageList')}
                     >
-                        <Text>Kuva</Text>
+                        <Text style={styles.btnText}>Kuva</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        flexDirection:'column',
-        justifyContent:'center',
-        alignItems: 'stretch',
-        marginTop: 20,
-    },
-    listItem:{
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-    },
-    image:{
-        width: 150,
-        height: 150
-    },
-    date:{
-    },
-    btnContainer:{
-        width: '100%',
-        bottom: 0,
-        flexDirection:'row',
-    },
-    btn:{
-        alignItems: 'center',
-        width:'33.33%',
-        paddingVertical: 20,
-    },
-    btnAdd:{
-        alignItems: 'center',
-        width:'100%',
-        paddingVertical: 20,
-    }
-})

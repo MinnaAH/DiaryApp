@@ -15,7 +15,6 @@ export class GetData extends Component{
         .orderBy('date', 'desc')
         .get()
         .then(snapshot => {
-            console.log('snapshot: ' + snapshot)
             if (snapshot.empty) {
               return null;
             }  
@@ -34,7 +33,6 @@ export class GetData extends Component{
         .where('date', "==", date)
         .get()
         .then(snapshot => {
-            console.log('snapshot: ' + snapshot)
             if (snapshot.empty) {
               return null;
             }  

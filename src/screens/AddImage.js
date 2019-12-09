@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Text, TouchableOpacity, StyleSheet, View, Image, TextInput,AsyncStorage, ActivityIndicator } from 'react-native';
+import { Text, TouchableOpacity, View, ScrollView, Image, TextInput,AsyncStorage, ActivityIndicator, Alert } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {AddData} from '../config/AddData';
+import styles from '../Style'
 
 export default class AddImage extends Component{
     constructor(props){
@@ -9,21 +10,9 @@ export default class AddImage extends Component{
         this.state ={
             name: null,
             image: null,
-            date: null,
             user: null,
             loading: false
         }     
-    }
-
-    componentDidMount(){
-        const day = new Date().getDate();
-        const month = new Date().getMonth() + 1;
-        const year = new Date().getFullYear();
-        const hour = new Date().getHours();
-        const minute = new Date().getMinutes();
-        this.setState({
-            date: day + '.' + month + '.' + year + ' ' + hour + ':' + minute,
-        });
     }
 
     uriToBlob = (uri) => {
@@ -69,7 +58,7 @@ export default class AddImage extends Component{
                 }
             })
             .then(() => {
-                alert('Kuva ladattu');
+                Alert.alert('Kuva ladattu','Kuvaon ladattu onnistuneesti sovellukseen')
                 navigate('ImageList');
             })
             .catch((error) => {
@@ -78,10 +67,12 @@ export default class AddImage extends Component{
         } 
         else{
             if(this.state.image === null && this.state.name === null){
-                alert('Kuva ja nimi puuttuvat!\nValitse kuva ja nimeä se ennen tallentamista')
+                Alert.alert('Kuva ja nimi puuttuvat!','Valitse kuva ja nimeä se ennen tallentamista')
+                this.setState({loading: false})
             }
             else{
-                alert('Nimi puuttuu!\nNimeä kuva ennen tallentamista')
+                Alert.alert('Nimi puuttuu!','Nimeä kuva ennen tallentamista')
+                this.setState({loading: false})
             }
         }
     };
@@ -98,80 +89,46 @@ export default class AddImage extends Component{
     };
 
     render(){
-        let { image } = this.state;
+        const { loading, image, name } = this.state
         return(
             <View style={styles.container}>
-                {this.state.loading && 
+                {loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
+                        color='#e93766'
                         size='large'
-                        animating={this.state.loading}/>
+                        animating={loading}/>
                     </View>
                 }
-                <Text style={styles.headline}>Valitse kuva</Text>
-                <View style={styles.imageView}>
-                    {image && <Image source={{ uri: image.uri }} style={styles.picture} />}
-                </View>
+                <ScrollView>
+                    <Text style={styles.headline2}>Valitse kuva</Text>
+                        <View style={styles.image}>
+                            {image && <Image source={{ uri: image.uri }} style={styles.picture} />}
+                        </View>
                 
-                {image &&<TextInput
-                        style={styles.name}
-                        placeholder="Nimi"
-                        onChangeText={(name) => this.setState({name})}
-                        value ={this.state.name}
-                    />}
-               
+                    {image &&<TextInput
+                            style={styles.name}
+                            placeholder="Nimi"
+                            onChangeText={(name) => this.setState({name})}
+                            value ={name}
+                        />}
+               </ScrollView>
                 <View style={styles.btnContainer}>
                 <TouchableOpacity
                         onPress={() => this.pickImage()}
-                        style={styles.btn}
+                        style={styles.btnAddImage}
                     >
-                        <Text>Valitse Kuva</Text>
+                        <Text style={styles.btnText}>Valitse Kuva</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {this.save(); this.setState({loading: true})}}
-                        style={styles.btn}
-                    ><Text>Tallenna</Text></TouchableOpacity>
+                        style={styles.btnAddImage}
+                    >
+                        <Text style={styles.btnText}>Tallenna</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
     }
 }
 
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        paddingTop: 30,
-        paddingHorizontal: 10,
-    },
-    headline:{
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    btnContainer:{
-        width: '100%',
-        position: 'absolute',
-        bottom: 0,
-        flexDirection:'row',
-    },
-    btn:{
-        alignItems: 'center',
-        width:'50%',
-        paddingVertical: 20,
-    },
-    imageView:{
-        width: '100%',
-        height: '50%',
-        marginTop: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    picture:{
-        aspectRatio: 1,
-        width: '90%',
-        height: undefined,
-    },
-    name:{
-        fontSize: 18,
-        width: '100%',
-    }
-})
