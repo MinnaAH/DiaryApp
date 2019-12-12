@@ -76,13 +76,13 @@ export default class TextContent extends Component{
                 {
                     
                     content.map((item, index) => (
-                        <View>
+                        <View key={index}>
                             <TouchableOpacity style={styles.deleteBtn}  onPress={() => this.showAlert(item.date)}>
                                 <Text style={styles.deleteText}>Poista</Text>
                             </TouchableOpacity>
-                            <ScrollView key={index}>
+                            <ScrollView>
                             
-                                <Text style={styles.contentHeadline}>{item.headline}</Text>
+                                <Text style={styles.headline2}>{item.headline}</Text>
                                 <Text style={styles.content}>{item.content}</Text>
                             </ScrollView>
                         </View>

@@ -64,9 +64,10 @@ export default class ImageContent extends Component{
     }
 
     render(){
+        const{loading, uri, name} = this.state
         return(
             <View style={styles.container}>
-                {this.state.loading && 
+                {loading && 
                     <View style={styles.loading}>
                         <ActivityIndicator 
                         color='#e93766'
@@ -74,14 +75,14 @@ export default class ImageContent extends Component{
                         animating={loading}/>
                     </View>
                 }
-                {this.state.uri && 
+                {uri && 
                     <View>
                         <TouchableOpacity style={styles.deleteBtn} onPress={() => this.showAlert()}>
                             <Text style={styles.deleteText}>Poista</Text>
                         </TouchableOpacity>
                             <View>
-                                <Image style={styles.image} source={{uri: this.state.uri}}/>
-                                <Text style={styles.imageText}>{this.state.name}</Text>
+                                <Image style={styles.image} source={{uri: uri}}/>
+                                <Text style={styles.imageText}>{name}</Text>
                             </View>
                     </View>
                 }
